@@ -1,20 +1,19 @@
 import json
 from datetime import datetime
-from pathlib import Path
 import re
 
 import pytest
 
+from config.paths import (
+    JUNIT_DIR,
+    PROJECT_ROOT,
+    REPORTS_DIR,
+    SCREENSHOTS_DIR,
+    TRACES_DIR,
+)
 from config.settings import BASE_URL, BROWSER
 from pages.home_page import HomePage
 
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-REPORTS_DIR = PROJECT_ROOT / "reports"
-HTML_DIR = REPORTS_DIR / "html"
-JUNIT_DIR = REPORTS_DIR / "junit"
-SCREENSHOTS_DIR = REPORTS_DIR / "screenshots"
-TRACES_DIR = REPORTS_DIR / "traces"
 ARTIFACTS_JSON = JUNIT_DIR / "failure_artifacts.json"
 DESKTOP_VIEWPORT = {"width": 1440, "height": 900}
 BROWSER_MAP = {
@@ -107,7 +106,7 @@ def _build_trace_name(nodeid: str) -> str:
 
 
 def _is_smoke_test(item) -> bool:
-    return Path(str(item.fspath)).name == "test_smoke.py"
+    return item.fspath.basename == "test_smoke.py"
 
 
 @pytest.hookimpl(hookwrapper=True)

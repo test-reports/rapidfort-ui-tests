@@ -1,16 +1,11 @@
 import json
 from datetime import datetime
-from pathlib import Path
 import xml.etree.ElementTree as ET
 from zoneinfo import ZoneInfo
 
+from config.paths import HTML_DIR, JUNIT_DIR, REPORTS_DIR, SCREENSHOTS_DIR, TRACES_DIR
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-REPORTS_DIR = PROJECT_ROOT / "reports"
-HTML_DIR = REPORTS_DIR / "html"
-JUNIT_DIR = REPORTS_DIR / "junit"
-SCREENSHOTS_DIR = REPORTS_DIR / "screenshots"
-TRACES_DIR = REPORTS_DIR / "traces"
+
 RESULTS_XML = JUNIT_DIR / "results.xml"
 SUMMARY_JSON = HTML_DIR / "summary.json"
 HISTORY_JSON = HTML_DIR / "history.json"

@@ -209,3 +209,4 @@ __marimo__/
 # Project-specific generated artifacts
 node_modules/
 reports/
+site/
