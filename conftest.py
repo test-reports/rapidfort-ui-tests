@@ -55,6 +55,14 @@ def trace_context(context, request):
     if should_save_trace:
         TRACES_DIR.mkdir(parents=True, exist_ok=True)
         context.tracing.stop(path=str(request.node._trace_path))
+        artifacts = _load_artifacts()
+        existing_artifact = artifacts.get(request.node.nodeid, {})
+        artifacts[request.node.nodeid] = {
+            "screenshot": existing_artifact.get("screenshot", ""),
+            "trace": str(request.node._trace_path.relative_to(PROJECT_ROOT)),
+            "errorMessage": existing_artifact.get("errorMessage", ""),
+        }
+        _save_artifacts(artifacts)
     else:
         context.tracing.stop()
 

@@ -113,6 +113,7 @@ jobs:
           SUITE_NAME: smoke
         run: |
           .venv/bin/python - <<'PY'
+          import json
           import os
           from pathlib import Path
           import xml.etree.ElementTree as ET
@@ -138,6 +139,17 @@ jobs:
           pages_url = f"https://{owner}.github.io/{repo_name}/" if owner and repo_name else ""
           suite_name = os.environ.get("SUITE_NAME", "smoke")
           latest_url = f"{pages_url}{suite_name}/latest/" if pages_url else ""
+          summary_json = Path("reports/html/summary.json")
+          trace_lines = []
+          if latest_url and summary_json.is_file():
+              summary = json.loads(summary_json.read_text(encoding="utf-8"))
+              for result in summary.get("results", []):
+                  trace_path = result.get("trace", "")
+                  if not trace_path:
+                      continue
+                  trace_name = Path(trace_path).name
+                  trace_url = f"{latest_url}traces/{trace_name}"
+                  trace_lines.append(f"- **{result.get('name', 'unknown')}**: {trace_url}")
 
           lines = [
               "### UI test dashboard summary (smoke)",
@@ -157,6 +169,9 @@ jobs:
                       f"- **All dashboards (branch root)**: {pages_url}",
                   ]
               )
+
+          if trace_lines:
+              lines.extend(["", "#### Trace URLs", *trace_lines])
 
           lines.extend(
               [

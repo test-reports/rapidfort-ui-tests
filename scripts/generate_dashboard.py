@@ -410,6 +410,20 @@ def render_dashboard(summary, history):
       const results = {results};
       const history = {history_data};
 
+      const buildArtifactHref = (artifactPath, artifactRoot) => {{
+        if (!artifactPath) {{
+          return "";
+        }}
+        return `${{artifactRoot}}/${{artifactPath.split("/").pop()}}`;
+      }};
+
+      const toAbsoluteUrl = (href) => {{
+        if (!href) {{
+          return "";
+        }}
+        return new URL(href, window.location.href).href;
+      }};
+
       const statusColors = {{
         passed: "#22c55e",
         failed: "#ef4444",
@@ -433,13 +447,18 @@ def render_dashboard(summary, history):
 
         const row = document.createElement("tr");
         row.className = "hover:bg-slate-900/60";
+        const screenshotHref = buildArtifactHref(test.screenshot, "{screenshots_prefix}");
         const screenshotCell = test.screenshot
-          ? `<a href="{screenshots_prefix}/${{test.screenshot.split("/").pop()}}" target="_blank" rel="noreferrer" title="Open full-size screenshot">
-               <img class="screenshot-thumb" src="{screenshots_prefix}/${{test.screenshot.split("/").pop()}}" alt="Failure screenshot for ${{test.name}}" />
+          ? `<a href="${{screenshotHref}}" target="_blank" rel="noreferrer" title="${{toAbsoluteUrl(screenshotHref)}}">
+               <img class="screenshot-thumb" src="${{screenshotHref}}" alt="Failure screenshot for ${{test.name}}" />
              </a>`
           : `<span class="text-slate-500">-</span>`;
+        const traceHref = buildArtifactHref(test.trace, "{traces_prefix}");
         const traceCell = test.trace
-          ? `<a class="text-accent underline underline-offset-4" href="{traces_prefix}/${{test.trace.split("/").pop()}}" target="_blank" rel="noreferrer">Open trace</a>`
+          ? `<div>
+               <a class="text-accent underline underline-offset-4" href="${{traceHref}}" target="_blank" rel="noreferrer">Open trace</a>
+               <div class="mt-1 break-all text-xs text-slate-500">${{toAbsoluteUrl(traceHref)}}</div>
+             </div>`
           : `<span class="text-slate-500">-</span>`;
         const errorCell = test.errorMessage
           ? test.errorMessage.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
