@@ -45,6 +45,14 @@ def browser_context_args(browser_context_args):
     }
 
 
+@pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args):
+    return {
+        **browser_type_launch_args,
+        "headless": False,
+    }
+
+
 @pytest.fixture(autouse=True)
 def trace_context(context, request):
     request.node._trace_path = TRACES_DIR / _build_trace_name(request.node.nodeid)
