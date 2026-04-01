@@ -1,0 +1,171 @@
+name: CI Smoke Tests Report
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request: {}
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RAPIDFORT_TOKEN }}
+
+      - name: Log trigger context
+        run: |
+          echo "::group::Trigger context (CI - Smoke Tests)"
+          echo "event_name: ${{ github.event_name }}"
+          echo "actor: ${{ github.actor }}"
+          echo "repository: ${{ github.repository }}"
+          echo "ref: ${{ github.ref }}"
+          echo "sha: ${{ github.sha }}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "pr_number: ${{ github.event.pull_request.number }}"
+            echo "pr_title: ${{ github.event.pull_request.title }}"
+          fi
+          echo "::endgroup::"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create venv and install dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: .venv/bin/python -m playwright install chromium
+
+      - name: Run smoke tests
+        env:
+          BASE_URL: ${{ vars.BASE_URL || 'https://rapidfort.com' }}
+          BROWSER: chromium
+        run: |
+          mkdir -p reports/junit
+          .venv/bin/pytest -v --tb=short tests/test_smoke.py --junitxml=reports/junit/results.xml
+
+      - name: Generate dashboard
+        if: always()
+        run: .venv/bin/python -m scripts.generate_dashboard
+
+      - name: Build GitHub Pages site
+        if: always()
+        run: .venv/bin/python -m scripts.build_pages_site
+
+      - name: Push dashboard to test-reports branch
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.RAPIDFORT_TOKEN }}
+          DASHBOARD_BRANCH: test-reports
+          SUITE_NAME: smoke
+        run: |
+          set -e
+          export GIT_AUTHOR_NAME="github-actions[bot]"
+          export GIT_AUTHOR_EMAIL="github-actions[bot]@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="github-actions[bot]"
+          export GIT_COMMITTER_EMAIL="github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin --prune
+
+          WORKTREE_DIR="$(mktemp -d)"
+          if git show-ref --verify --quiet "refs/remotes/origin/${DASHBOARD_BRANCH}"; then
+            git worktree add -B "${DASHBOARD_BRANCH}" "${WORKTREE_DIR}" "origin/${DASHBOARD_BRANCH}"
+          else
+            git worktree add -B "${DASHBOARD_BRANCH}" "${WORKTREE_DIR}"
+          fi
+
+          RUN_ID="${GITHUB_RUN_ID:-$(date +%Y%m%d-%H%M%S)}"
+          RUN_DIR="${WORKTREE_DIR}/${SUITE_NAME}/${RUN_ID}"
+          LATEST_DIR="${WORKTREE_DIR}/${SUITE_NAME}/latest"
+
+          mkdir -p "${RUN_DIR}" "${LATEST_DIR}"
+
+          echo "Syncing dashboard to suite run directory: ${RUN_DIR}"
+          rsync -a --delete --exclude='.git' site/ "${RUN_DIR}/"
+
+          echo "Updating suite latest pointer: ${LATEST_DIR}"
+          rsync -a --delete --exclude='.git' site/ "${LATEST_DIR}/"
+
+          cd "${WORKTREE_DIR}"
+          touch .nojekyll
+          git add .
+          if git diff --cached --quiet; then
+            echo "No dashboard changes to commit."
+          else
+            git commit -m "Update UI dashboard (smoke) for run ${GITHUB_RUN_ID}"
+            git push origin "${DASHBOARD_BRANCH}"
+          fi
+
+      - name: Write dashboard summary
+        if: always()
+        env:
+          SUITE_NAME: smoke
+        run: |
+          .venv/bin/python - <<'PY'
+          import os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          junit = Path("reports/junit/results.xml")
+          if not junit.is_file():
+              raise SystemExit("reports/junit/results.xml not found; cannot build dashboard summary.")
+
+          root = ET.parse(junit).getroot()
+          testsuite = root if root.tag == "testsuite" else root.find("testsuite")
+          if testsuite is None:
+              raise SystemExit("Could not find testsuite in JUnit XML.")
+
+          total = int(testsuite.attrib.get("tests", 0))
+          failed = int(testsuite.attrib.get("failures", 0))
+          error = int(testsuite.attrib.get("errors", 0))
+          skipped = int(testsuite.attrib.get("skipped", 0))
+          passed = max(total - failed - error - skipped, 0)
+
+          repo = os.environ.get("GITHUB_REPOSITORY", "")
+          owner = os.environ.get("GITHUB_REPOSITORY_OWNER") or (repo.split("/")[0] if repo else "")
+          repo_name = repo.split("/", 1)[1] if "/" in repo else ""
+          pages_url = f"https://{owner}.github.io/{repo_name}/" if owner and repo_name else ""
+          suite_name = os.environ.get("SUITE_NAME", "smoke")
+          latest_url = f"{pages_url}{suite_name}/latest/" if pages_url else ""
+
+          lines = [
+              "### UI test dashboard summary (smoke)",
+              "",
+              f"- **Total tests**: {total}",
+              f"- **Passed**: {passed}",
+              f"- **Failed**: {failed}",
+              f"- **Error**: {error}",
+              f"- **Skipped**: {skipped}",
+          ]
+
+          if latest_url:
+              lines.extend(
+                  [
+                      "",
+                      f"- **Smoke dashboard (latest)**: {latest_url}",
+                      f"- **All dashboards (branch root)**: {pages_url}",
+                  ]
+              )
+
+          lines.extend(
+              [
+                  "",
+                  "_Smoke tests only. Rendered from `reports/junit/results.xml`. Dashboard published to the `test-reports` branch under `smoke/<run-id>/` with `smoke/latest/` as a stable pointer._",
+              ]
+          )
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary_path:
+              Path(summary_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY

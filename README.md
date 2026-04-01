@@ -1,6 +1,6 @@
 # rapidfort-ui-tests
 
-UI smoke and regression checks for `rapidfort.com`, plus a static dashboard that can be published to GitHub Pages.
+UI smoke and regression checks for `rapidfort.com`, plus a static dashboard history published from the `test-reports` branch.
 
 ## Local workflow
 
@@ -19,11 +19,13 @@ The publishable static site is assembled in `site/`.
 
 ## GitHub Pages
 
-The GitHub Actions workflow in `.github/workflows/deploy-pages.yml` keeps concerns separated:
+The GitHub Actions workflow in `.github/workflows/ci-smoke-tests-report.yml` follows a smoke-test CI flow with dashboard publishing:
 
+- smoke tests run on `macos-latest`
 - `pytest` produces raw test artifacts in `reports/`
 - `python -m scripts.generate_dashboard` turns those artifacts into static dashboard files
 - `python -m scripts.build_pages_site` prepares a GitHub Pages site in `site/`
-- GitHub Actions deploys only the `site/` artifact to Pages
+- GitHub Actions publishes each run to `test-reports/smoke/<run-id>/`
+- GitHub Actions refreshes `test-reports/smoke/latest/` as the stable dashboard URL
 
-Set the repository Pages source to GitHub Actions. If you want to override the target URL under test, add a repository variable named `BASE_URL`.
+Set the repository Pages source to the `test-reports` branch, rooted at `/`. If you want to override the target URL under test, add a repository variable named `BASE_URL`. The workflow also requires the repository secret `RAPIDFORT_TOKEN` for checkout and branch publishing.
