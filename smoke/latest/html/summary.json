@@ -1,22 +1,22 @@
 {
-  "generatedAt": "2026-04-01T14:06:28.845030-07:00",
-  "generatedAtDisplay": "Apr 1, 2026 2:06 PM PDT",
+  "generatedAt": "2026-04-01T14:33:37.732416-07:00",
+  "generatedAtDisplay": "Apr 1, 2026 2:33 PM PDT",
   "total": 1,
   "passed": 1,
   "failed": 0,
   "skipped": 0,
   "passRate": 100.0,
-  "duration": 2.057,
+  "duration": 12.606,
   "results": [
     {
       "name": "test_homepage_smoke_test[chromium]",
       "classname": "tests.test_smoke",
-      "time": 2.057,
+      "time": 12.606,
       "status": "passed",
       "details": "",
       "errorMessage": "",
       "screenshot": "",
-      "trace": "reports/traces/test_homepage_smoke_test_chromium_20260401_210627.zip"
+      "trace": "reports/traces/test_homepage_smoke_test_chromium_20260401_213327.zip"
     }
   ]
 }
