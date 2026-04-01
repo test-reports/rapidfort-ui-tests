@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-04-01T13:49:23.873279-07:00",
+  "generatedAtDisplay": "Apr 1, 2026 1:49 PM PDT",
+  "total": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "passRate": 100.0,
+  "duration": 1.915,
+  "results": [
+    {
+      "name": "test_homepage_smoke_test[chromium]",
+      "classname": "tests.test_smoke",
+      "time": 1.915,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    }
+  ]
+}
