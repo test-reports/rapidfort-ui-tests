@@ -97,7 +97,7 @@
         <div>
           <p class="mb-2 text-xs uppercase tracking-[0.26em] text-slate-400">RapidFort UI Tests</p>
           <h1 class="text-3xl font-semibold tracking-tight text-white">Test Results Dashboard</h1>
-          <p class="mt-2 text-sm text-slate-400">Generated Apr 1, 2026 1:49 PM PDT</p>
+          <p class="mt-2 text-sm text-slate-400">Generated Apr 1, 2026 1:54 PM PDT</p>
         </div>
         <p class="text-xs uppercase tracking-[0.26em] text-slate-500">Pass rate 100.0%</p>
       </div>
@@ -179,8 +179,22 @@
     </div>
 
     <script>
-      const results = [{"name": "test_homepage_smoke_test[chromium]", "classname": "tests.test_smoke", "time": 1.915, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}];
-      const history = [{"generatedAt": "2026-04-01T13:49:23.873279-07:00", "passRate": 100.0, "passed": 1, "failed": 0, "skipped": 0, "total": 1}];
+      const results = [{"name": "test_homepage_smoke_test[chromium]", "classname": "tests.test_smoke", "time": 1.717, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": "reports/traces/test_homepage_smoke_test_chromium_20260401_205439.zip"}];
+      const history = [{"generatedAt": "2026-04-01T13:54:40.819549-07:00", "passRate": 100.0, "passed": 1, "failed": 0, "skipped": 0, "total": 1}];
+
+      const buildArtifactHref = (artifactPath, artifactRoot) => {
+        if (!artifactPath) {
+          return "";
+        }
+        return `${artifactRoot}/${artifactPath.split("/").pop()}`;
+      };
+
+      const toAbsoluteUrl = (href) => {
+        if (!href) {
+          return "";
+        }
+        return new URL(href, window.location.href).href;
+      };
 
       const statusColors = {
         passed: "#22c55e",
@@ -205,13 +219,18 @@
 
         const row = document.createElement("tr");
         row.className = "hover:bg-slate-900/60";
+        const screenshotHref = buildArtifactHref(test.screenshot, "../screenshots");
         const screenshotCell = test.screenshot
-          ? `<a href="../screenshots/${test.screenshot.split("/").pop()}" target="_blank" rel="noreferrer" title="Open full-size screenshot">
-               <img class="screenshot-thumb" src="../screenshots/${test.screenshot.split("/").pop()}" alt="Failure screenshot for ${test.name}" />
+          ? `<a href="${screenshotHref}" target="_blank" rel="noreferrer" title="${toAbsoluteUrl(screenshotHref)}">
+               <img class="screenshot-thumb" src="${screenshotHref}" alt="Failure screenshot for ${test.name}" />
              </a>`
           : `<span class="text-slate-500">-</span>`;
+        const traceHref = buildArtifactHref(test.trace, "../traces");
         const traceCell = test.trace
-          ? `<a class="text-accent underline underline-offset-4" href="../traces/${test.trace.split("/").pop()}" target="_blank" rel="noreferrer">Open trace</a>`
+          ? `<div>
+               <a class="text-accent underline underline-offset-4" href="${traceHref}" target="_blank" rel="noreferrer">Open trace</a>
+               <div class="mt-1 break-all text-xs text-slate-500">${toAbsoluteUrl(traceHref)}</div>
+             </div>`
           : `<span class="text-slate-500">-</span>`;
         const errorCell = test.errorMessage
           ? test.errorMessage.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
