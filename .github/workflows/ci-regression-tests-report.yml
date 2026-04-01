@@ -1,4 +1,4 @@
-name: CI Smoke Tests Report
+name: CI Regression Tests Report
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
 
       - name: Log trigger context
         run: |
-          echo "::group::Trigger context (CI - Smoke Tests)"
+          echo "::group::Trigger context (CI - Regression Tests)"
           echo "event_name: ${{ github.event_name }}"
           echo "actor: ${{ github.actor }}"
           echo "repository: ${{ github.repository }}"
@@ -47,13 +47,23 @@ jobs:
       - name: Install Playwright browsers
         run: .venv/bin/python -m playwright install chromium
 
-      - name: Run smoke tests
+      - name: Select suite mode
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "SUITE_NAME=regression" >> "$GITHUB_ENV"
+            echo "PYTEST_TARGET=tests" >> "$GITHUB_ENV"
+          else
+            echo "SUITE_NAME=smoke" >> "$GITHUB_ENV"
+            echo "PYTEST_TARGET=tests/test_smoke.py" >> "$GITHUB_ENV"
+          fi
+
+      - name: Run selected tests
         env:
           BASE_URL: ${{ vars.BASE_URL || 'https://rapidfort.com' }}
           BROWSER: chromium
         run: |
           mkdir -p reports/junit
-          .venv/bin/pytest -v --tb=short tests/test_smoke.py --junitxml=reports/junit/results.xml
+          .venv/bin/pytest -v --tb=short "${PYTEST_TARGET}" --junitxml=reports/junit/results.xml
 
       - name: Generate dashboard
         if: always()
@@ -68,7 +78,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RAPIDFORT_TOKEN }}
           DASHBOARD_BRANCH: test-reports
-          SUITE_NAME: smoke
         run: |
           set -e
           export GIT_AUTHOR_NAME="github-actions[bot]"
@@ -103,14 +112,12 @@ jobs:
           if git diff --cached --quiet; then
             echo "No dashboard changes to commit."
           else
-            git commit -m "Update UI dashboard (smoke) for run ${GITHUB_RUN_ID}"
+            git commit -m "Update UI dashboard (${SUITE_NAME}) for run ${GITHUB_RUN_ID}"
             git push origin "${DASHBOARD_BRANCH}"
           fi
 
       - name: Write dashboard summary
         if: always()
-        env:
-          SUITE_NAME: smoke
         run: |
           .venv/bin/python - <<'PY'
           import json
@@ -138,7 +145,7 @@ jobs:
           owner = os.environ.get("GITHUB_REPOSITORY_OWNER") or (repo.split("/")[0] if repo else "")
           repo_name = repo.split("/", 1)[1] if "/" in repo else ""
           pages_url = f"https://{owner}.github.io/{repo_name}/" if owner and repo_name else ""
-          suite_name = os.environ.get("SUITE_NAME", "smoke")
+          suite_name = os.environ.get("SUITE_NAME", "regression")
           latest_url = f"{pages_url}{suite_name}/latest/" if pages_url else ""
           summary_json = Path("reports/html/summary.json")
           trace_lines = []
@@ -156,7 +163,7 @@ jobs:
                   )
 
           lines = [
-              "### UI test dashboard summary (smoke)",
+              f"### UI test dashboard summary ({suite_name})",
               "",
               f"- **Total tests**: {total}",
               f"- **Passed**: {passed}",
@@ -169,7 +176,7 @@ jobs:
               lines.extend(
                   [
                       "",
-                      f"- **Smoke dashboard (latest)**: {latest_url}",
+                      f"- **{suite_name.title()} dashboard (latest)**: {latest_url}",
                       f"- **All dashboards (branch root)**: {pages_url}",
                   ]
               )
@@ -180,7 +187,7 @@ jobs:
           lines.extend(
               [
                   "",
-                  "_Smoke tests only. Rendered from `reports/junit/results.xml`. Dashboard published to the `test-reports` branch under `smoke/<run-id>/` with `smoke/latest/` as a stable pointer._",
+                  f"_{suite_name.title()} tests rendered from `reports/junit/results.xml`. Dashboard published to the `test-reports` branch under `{suite_name}/<run-id>/` with `{suite_name}/latest/` as a stable pointer._",
               ]
           )
 
