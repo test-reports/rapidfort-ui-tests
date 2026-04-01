@@ -86,13 +86,6 @@ def home_page(page_object):
     page_object.open()
     return page_object
 
-
-@pytest.fixture
-def smoke_setup(page_object):
-    response = page_object.page.goto(BASE_URL, wait_until="domcontentloaded")
-    return page_object, response
-
-
 def _load_artifacts():
     if not ARTIFACTS_JSON.exists():
         return {}
@@ -122,7 +115,7 @@ def _build_trace_name(nodeid: str) -> str:
 
 
 def _is_smoke_test(item) -> bool:
-    return item.fspath.basename == "test_smoke.py"
+    return item.get_closest_marker("smoke") is not None
 
 
 @pytest.hookimpl(hookwrapper=True)

@@ -52,9 +52,11 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             echo "SUITE_NAME=regression" >> "$GITHUB_ENV"
             echo "PYTEST_TARGET=tests" >> "$GITHUB_ENV"
+            echo "PYTEST_MARK=" >> "$GITHUB_ENV"
           else
             echo "SUITE_NAME=smoke" >> "$GITHUB_ENV"
-            echo "PYTEST_TARGET=tests/test_smoke.py" >> "$GITHUB_ENV"
+            echo "PYTEST_TARGET=tests" >> "$GITHUB_ENV"
+            echo "PYTEST_MARK=smoke" >> "$GITHUB_ENV"
           fi
 
       - name: Run selected tests
@@ -63,7 +65,11 @@ jobs:
           BROWSER: chromium
         run: |
           mkdir -p reports/junit
-          .venv/bin/pytest -v --tb=short "${PYTEST_TARGET}" --junitxml=reports/junit/results.xml
+          if [ -n "${PYTEST_MARK}" ]; then
+            .venv/bin/pytest -v --tb=short -m "${PYTEST_MARK}" "${PYTEST_TARGET}" --junitxml=reports/junit/results.xml
+          else
+            .venv/bin/pytest -v --tb=short "${PYTEST_TARGET}" --junitxml=reports/junit/results.xml
+          fi
 
       - name: Generate dashboard
         if: always()
