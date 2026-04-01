@@ -115,6 +115,7 @@ jobs:
           .venv/bin/python - <<'PY'
           import json
           import os
+          from urllib.parse import quote
           from pathlib import Path
           import xml.etree.ElementTree as ET
 
@@ -149,7 +150,10 @@ jobs:
                       continue
                   trace_name = Path(trace_path).name
                   trace_url = f"{latest_url}traces/{trace_name}"
-                  trace_lines.append(f"- **{result.get('name', 'unknown')}**: {trace_url}")
+                  trace_viewer_url = f"https://trace.playwright.dev/?trace={quote(trace_url, safe='')}"
+                  trace_lines.append(
+                      f"- **{result.get('name', 'unknown')}**: [Open trace viewer]({trace_viewer_url}) | [Download trace zip]({trace_url})"
+                  )
 
           lines = [
               "### UI test dashboard summary (smoke)",

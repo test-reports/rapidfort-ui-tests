@@ -424,6 +424,13 @@ def render_dashboard(summary, history):
         return new URL(href, window.location.href).href;
       }};
 
+      const buildTraceViewerUrl = (href) => {{
+        if (!href) {{
+          return "";
+        }}
+        return `https://trace.playwright.dev/?trace=${{encodeURIComponent(toAbsoluteUrl(href))}}`;
+      }};
+
       const statusColors = {{
         passed: "#22c55e",
         failed: "#ef4444",
@@ -454,9 +461,13 @@ def render_dashboard(summary, history):
              </a>`
           : `<span class="text-slate-500">-</span>`;
         const traceHref = buildArtifactHref(test.trace, "{traces_prefix}");
+        const traceViewerHref = buildTraceViewerUrl(traceHref);
         const traceCell = test.trace
           ? `<div>
-               <a class="text-accent underline underline-offset-4" href="${{traceHref}}" target="_blank" rel="noreferrer">Open trace</a>
+               <a class="text-accent underline underline-offset-4" href="${{traceViewerHref}}" target="_blank" rel="noreferrer">Open trace viewer</a>
+               <div class="mt-1">
+                 <a class="text-slate-300 underline underline-offset-4" href="${{traceHref}}" target="_blank" rel="noreferrer">Download trace zip</a>
+               </div>
                <div class="mt-1 break-all text-xs text-slate-500">${{toAbsoluteUrl(traceHref)}}</div>
              </div>`
           : `<span class="text-slate-500">-</span>`;
