@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-04-01T14:37:15.862602-07:00",
+  "generatedAtDisplay": "Apr 1, 2026 2:37 PM PDT",
+  "total": 7,
+  "passed": 6,
+  "failed": 1,
+  "skipped": 0,
+  "passRate": 85.7,
+  "duration": 29.793,
+  "results": [
+    {
+      "name": "test_dashboard_failure_example[chromium]",
+      "classname": "tests.test_ui_checks",
+      "time": 7.905,
+      "status": "failed",
+      "details": "tests/test_ui_checks.py:25: in test_dashboard_failure_example\n    ).to_be_visible()\n      ^^^^^^^^^^^^^^^\nE   AssertionError: Locator expected to be visible\nE   Actual value: <element(s) not found> \nE   Call log:\nE     - Expect \"to_be_visible\" with timeout 5000ms\nE     - waiting for get_by_role(\"heading\", name=re.compile(r\"Intentional Trace Failure\", re.IGNORECASE), level=1)",
+      "errorMessage": "AssertionError: Locator expected to be visible",
+      "screenshot": "reports/screenshots/tests-test_ui_checks.py-test_dashboard_failure_example-chromium-.png",
+      "trace": "reports/traces/test_dashboard_failure_example_chromium_20260401_213707.zip"
+    },
+    {
+      "name": "test_logo_returns_to_homepage[chromium]",
+      "classname": "tests.test_flows",
+      "time": 11.375,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_request_access_navigation[chromium]",
+      "classname": "tests.test_flows",
+      "time": 2.303,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_schedule_demo_navigation[chromium]",
+      "classname": "tests.test_flows",
+      "time": 2.479,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_homepage_smoke_test[chromium]",
+      "classname": "tests.test_smoke",
+      "time": 2.163,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": "reports/traces/test_homepage_smoke_test_chromium_20260401_213701.zip"
+    },
+    {
+      "name": "test_homepage_ctas[chromium]",
+      "classname": "tests.test_ui_checks",
+      "time": 2.065,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_homepage_ui[chromium]",
+      "classname": "tests.test_ui_checks",
+      "time": 1.503,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    }
+  ]
+}
