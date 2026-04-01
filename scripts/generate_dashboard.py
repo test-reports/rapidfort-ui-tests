@@ -388,10 +388,19 @@ def render_dashboard(summary, history):
           <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">Detailed view</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-800 text-left text-sm">
+          <table class="min-w-full table-fixed divide-y divide-slate-800 text-left text-sm">
+            <colgroup>
+              <col class="w-[18%]" />
+              <col class="w-[14%]" />
+              <col class="w-[10%]" />
+              <col class="w-[10%]" />
+              <col class="w-[24%]" />
+              <col class="w-[10%]" />
+              <col class="w-[14%]" />
+            </colgroup>
             <thead>
               <tr class="text-slate-400">
-                <th class="px-4 py-3 font-medium">Test</th>
+                <th class="px-4 py-3 font-medium">Test Name</th>
                 <th class="px-4 py-3 font-medium">Suite</th>
                 <th class="px-4 py-3 font-medium">Status</th>
                 <th class="px-4 py-3 font-medium">Duration</th>
@@ -475,13 +484,13 @@ def render_dashboard(summary, history):
           ? test.errorMessage.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
           : "-";
         row.innerHTML = `
-          <td class="px-4 py-3 text-white">${{test.name}}</td>
-          <td class="px-4 py-3 text-slate-400">${{test.classname || "n/a"}}</td>
+          <td class="px-4 py-3 text-white"><div class="truncate" title="${{test.name}}">${{test.name}}</div></td>
+          <td class="px-4 py-3 text-slate-400"><div class="truncate" title="${{test.classname || "n/a"}}">${{test.classname || "n/a"}}</div></td>
           <td class="px-4 py-3"><span class="rounded-full px-3 py-1 text-xs font-medium ${{badgeColor}}">${{statusLabel}}</span></td>
           <td class="px-4 py-3 text-slate-300">${{test.time.toFixed(3)}}s</td>
-          <td class="max-w-xl px-4 py-3 text-slate-300">${{errorCell}}</td>
+          <td class="px-4 py-3 text-slate-300 break-words">${{errorCell}}</td>
           <td class="px-4 py-3 text-slate-300">${{screenshotCell}}</td>
-          <td class="px-4 py-3 text-slate-300">${{traceCell}}</td>
+          <td class="px-4 py-3 text-slate-300 break-words">${{traceCell}}</td>
         `;
         tableBody.appendChild(row);
       }});
