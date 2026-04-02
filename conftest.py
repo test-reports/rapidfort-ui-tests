@@ -12,7 +12,6 @@ from config.paths import (
     TRACES_DIR,
 )
 from config.settings import BASE_URL, BROWSER
-from pages.home_page import HomePage
 
 ARTIFACTS_JSON = JUNIT_DIR / "failure_artifacts.json"
 DESKTOP_VIEWPORT = {"width": 1440, "height": 900}
@@ -74,17 +73,6 @@ def trace_context(context, request):
     else:
         context.tracing.stop()
 
-
-@pytest.fixture
-def page_object(page):
-    page.set_viewport_size(DESKTOP_VIEWPORT)
-    return HomePage(page)
-
-
-@pytest.fixture
-def home_page(page_object):
-    page_object.open()
-    return page_object
 
 def _load_artifacts():
     if not ARTIFACTS_JSON.exists():

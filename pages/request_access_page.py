@@ -1,10 +1,10 @@
 from pages.base_page import BasePage
 
 
-class BlogPage(BasePage):
-    PATH = "blog"
-    URL = "/blog"
-    H1 = "Blog"
+class RequestAccessPage(BasePage):
+    PATH = "contact-us"
+    URL = "/contact-us"
+    H1 = "Contact"
 
     def expect_loaded(self) -> None:
         self.expect_url_contains(self.URL)

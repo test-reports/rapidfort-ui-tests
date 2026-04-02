@@ -11,14 +11,21 @@ class BasePage:
 
     Use Playwright `expect()` instead of Python `assert` because it
     auto-waits and reduces UI flakiness.
+
+    Subclasses set PATH for direct-URL navigation via open().
     """
+
+    PATH = ""
 
     def __init__(self, page: Page) -> None:
         self.page = page
 
-    # --- Navigation ---
-    def goto(self, url: str) -> None:
-        self.page.goto(url)
+    def open(self, path: str | None = None):
+        """Navigate to this page's PATH (no args) or a specific path. Returns self."""
+        target_path = self.PATH if path is None else path
+        url = BASE_URL if not target_path else f"{BASE_URL.rstrip('/')}/{target_path.lstrip('/')}"
+        self.page.goto(url, wait_until="domcontentloaded")
+        return self
 
     def reload(self) -> None:
         self.page.reload()
@@ -29,25 +36,26 @@ class BasePage:
 
     @property
     def nav_area(self):
+        """
+        Playwright locators are lazy -- resolved fresh on each access.
+        Using @property avoids stale references with dynamic DOM updates.
+        """
         return self.page.locator(".vf-nav-area")
 
-    def open(self, path: str = "") -> None:
-        target = BASE_URL if not path else f"{BASE_URL.rstrip('/')}/{path.lstrip('/')}"
-        self.page.goto(target, wait_until="domcontentloaded")
-
-    # --- Page info ---
     def get_title(self) -> str:
         return self.page.title()
 
     def get_url(self) -> str:
         return self.page.url
 
-    # --- Basic interactions (light wrappers only) ---
     def click(self, locator) -> None:
         locator.click()
 
     def fill(self, locator, text: str) -> None:
         locator.fill(text)
+
+    def hover(self, locator) -> None:
+        locator.hover()
 
     def press(self, locator, key: str) -> None:
         locator.press(key)
@@ -61,10 +69,16 @@ class BasePage:
     def click_nav_link(self, name: str) -> None:
         self.nav_link(name).click()
 
+    def hover_nav_link(self, name: str) -> None:
+        self.nav_link(name).hover()
+
+    def click_hover_nav_link(self, menu_name: str, item_name: str) -> None:
+        self.hover_nav_link(menu_name)
+        self.click_nav_link(item_name)
+
     def click_header_link(self, name: str) -> None:
         self.header_link(name).click()
 
-    # --- Utility ---
     def wait_for_timeout(self, ms: int = 1000) -> None:
         self.page.wait_for_timeout(ms)
 

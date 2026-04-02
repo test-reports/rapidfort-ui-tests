@@ -1,3 +1,6 @@
-def test_blog_page_loaded(home_page):
-    blog_page = home_page.go_to_blog()
+from pages.resources.blog_page import BlogPage
+
+
+def test_blog_page_loaded(page):
+    blog_page = BlogPage(page).open()
     blog_page.expect_loaded()

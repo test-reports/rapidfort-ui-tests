@@ -387,26 +387,26 @@ def render_dashboard(summary, history):
           <h2 class="text-xl font-semibold text-white">Test Case Details</h2>
           <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">Detailed view</span>
         </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full table-fixed divide-y divide-slate-800 text-left text-sm">
+        <div class="max-h-[34rem] overflow-y-auto overflow-x-hidden rounded-lg border border-slate-800">
+          <table class="min-w-full table-fixed text-left text-xs">
             <colgroup>
-              <col class="w-[18%]" />
-              <col class="w-[14%]" />
-              <col class="w-[10%]" />
-              <col class="w-[10%]" />
+              <col class="w-[16%]" />
+              <col class="w-[9%]" />
+              <col class="w-[8%]" />
+              <col class="w-[7%]" />
+              <col class="w-[28%]" />
+              <col class="w-[8%]" />
               <col class="w-[24%]" />
-              <col class="w-[10%]" />
-              <col class="w-[14%]" />
             </colgroup>
-            <thead>
+            <thead class="sticky top-0 z-10 border-b border-slate-700 bg-slate-900">
               <tr class="text-slate-400">
-                <th class="px-4 py-3 font-medium">Test Name</th>
-                <th class="px-4 py-3 font-medium">Suite</th>
-                <th class="px-4 py-3 font-medium">Status</th>
-                <th class="px-4 py-3 font-medium">Duration</th>
-                <th class="px-4 py-3 font-medium">Error Message</th>
-                <th class="px-4 py-3 font-medium">Screenshot</th>
-                <th class="px-4 py-3 font-medium">Trace</th>
+                <th class="px-2 py-3 font-medium">Test Name</th>
+                <th class="px-2 py-3 font-medium">Suite</th>
+                <th class="px-2 py-3 font-medium">Status</th>
+                <th class="px-2 py-3 font-medium">Duration</th>
+                <th class="px-2 py-3 font-medium">Error Message</th>
+                <th class="px-2 py-3 font-medium">Screenshot</th>
+                <th class="px-2 py-3 font-medium">Trace</th>
               </tr>
             </thead>
             <tbody id="resultsTable" class="divide-y divide-slate-900"></tbody>
@@ -440,6 +440,13 @@ def render_dashboard(summary, history):
         return `https://trace.playwright.dev/?trace=${{encodeURIComponent(toAbsoluteUrl(href))}}`;
       }};
 
+      const formatSuiteName = (classname) => {{
+        if (!classname) {{
+          return "n/a";
+        }}
+        return classname.replace(/^tests\\./, "").replace(/^test_/, "");
+      }};
+
       const statusColors = {{
         passed: "#22c55e",
         failed: "#ef4444",
@@ -462,7 +469,8 @@ def render_dashboard(summary, history):
               : "Skipped";
 
         const row = document.createElement("tr");
-        row.className = "hover:bg-slate-900/60";
+        row.className = "border-b border-slate-900 hover:bg-slate-900/60";
+        const suiteName = formatSuiteName(test.classname);
         const screenshotHref = buildArtifactHref(test.screenshot, "{screenshots_prefix}");
         const screenshotCell = test.screenshot
           ? `<a href="${{screenshotHref}}" target="_blank" rel="noreferrer" title="${{toAbsoluteUrl(screenshotHref)}}">
@@ -473,24 +481,23 @@ def render_dashboard(summary, history):
         const traceViewerHref = buildTraceViewerUrl(traceHref);
         const traceCell = test.trace
           ? `<div>
-               <a class="text-accent underline underline-offset-4" href="${{traceViewerHref}}" target="_blank" rel="noreferrer">Open trace viewer</a>
-               <div class="mt-1">
-                 <a class="text-slate-300 underline underline-offset-4" href="${{traceHref}}" target="_blank" rel="noreferrer">Download trace zip</a>
+               <a class="text-accent underline underline-offset-4" href="${{traceViewerHref}}" target="_blank" rel="noreferrer">Viewer</a>
+               <div class="mt-0.5">
+                 <a class="text-slate-300 underline underline-offset-4" href="${{traceHref}}" target="_blank" rel="noreferrer">ZIP</a>
                </div>
-               <div class="mt-1 break-all text-xs text-slate-500">${{toAbsoluteUrl(traceHref)}}</div>
              </div>`
           : `<span class="text-slate-500">-</span>`;
         const errorCell = test.errorMessage
           ? test.errorMessage.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
           : "-";
         row.innerHTML = `
-          <td class="px-4 py-3 text-white"><div class="truncate" title="${{test.name}}">${{test.name}}</div></td>
-          <td class="px-4 py-3 text-slate-400"><div class="truncate" title="${{test.classname || "n/a"}}">${{test.classname || "n/a"}}</div></td>
-          <td class="px-4 py-3"><span class="rounded-full px-3 py-1 text-xs font-medium ${{badgeColor}}">${{statusLabel}}</span></td>
-          <td class="px-4 py-3 text-slate-300">${{test.time.toFixed(3)}}s</td>
-          <td class="px-4 py-3 text-slate-300 break-words">${{errorCell}}</td>
-          <td class="px-4 py-3 text-slate-300">${{screenshotCell}}</td>
-          <td class="px-4 py-3 text-slate-300 break-words">${{traceCell}}</td>
+          <td class="px-2 py-2 align-top text-white"><div class="break-words leading-snug" title="${{test.name}}">${{test.name}}</div></td>
+          <td class="px-2 py-2 align-top text-slate-400"><div class="break-words leading-snug" title="${{test.classname || "n/a"}}">${{suiteName}}</div></td>
+          <td class="px-2 py-2"><span class="rounded-full px-2 py-0.5 text-[11px] font-medium ${{badgeColor}}">${{statusLabel}}</span></td>
+          <td class="px-2 py-2 align-top text-slate-300 whitespace-nowrap">${{test.time.toFixed(3)}}s</td>
+          <td class="px-2 py-2 align-top text-slate-300 break-words leading-snug">${{errorCell}}</td>
+          <td class="px-2 py-2 align-top text-slate-300">${{screenshotCell}}</td>
+          <td class="px-2 py-2 align-top text-slate-300 break-words">${{traceCell}}</td>
         `;
         tableBody.appendChild(row);
       }});
