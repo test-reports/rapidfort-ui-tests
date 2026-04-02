@@ -1,0 +1,55 @@
+# Activate virtual environment
+. .venv/bin/activate
+
+# Enable LambdaTest cloud mode
+export LT_ENABLED=true
+
+# Disable LambdaTest and force local browser runs
+export LT_ENABLED=false
+
+# Run on LambdaTest without editing env toggle
+python -m pytest --lambdatest
+
+# Force local run even if LT_ENABLED=true
+python -m pytest --local
+
+# Set/override LambdaTest credentials and metadata
+export LT_USERNAME="your_username"
+export LT_ACCESS_KEY="your_access_key"
+export LT_PLATFORM="macOS Ventura"
+export LT_PROJECT="rapidfort-ui-tests"
+export LT_BUILD="rapidfort-ui-tests-$(date +%Y%m%d-%H%M%S)"
+export LT_TEST_NAME="pytest-playwright run"
+export LT_BROWSER_VERSION="latest"
+
+# Run full suite (uses .env defaults)
+python -m pytest
+
+# Run full suite in parallel (4 workers)
+python -m pytest -n 4
+
+# Run full suite in parallel on LambdaTest
+python -m pytest -n 4 --lambdatest
+
+# Run only smoke tests
+python -m pytest -m smoke
+
+# Run smoke tests in parallel
+python -m pytest -m smoke -n 4
+
+# Run a single test file
+python -m pytest tests/test_home_page.py
+
+# Run a single test by nodeid
+python -m pytest tests/test_home_page.py::test_request_access_navigation
+
+# Override browser for this run
+python -m pytest --browser chromium
+python -m pytest --browser firefox
+python -m pytest --browser webkit
+
+# Collect tests without executing
+python -m pytest --collect-only
+
+# Generate dashboard from latest junit/artifacts
+PYTHONPATH=. python scripts/generate_dashboard.py
