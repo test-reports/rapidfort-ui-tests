@@ -61,5 +61,3 @@ python -m pytest --collect-only
 
 # Generate dashboard from latest junit/artifacts
 PYTHONPATH=. python scripts/generate_dashboard.py
-
-# test
