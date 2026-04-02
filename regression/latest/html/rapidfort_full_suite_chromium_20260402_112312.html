@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RapidFort Test Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              surface: "#161b22",
+              panel: "#0f1720",
+              success: "#22c55e",
+              failed: "#ef4444",
+              skipped: "#f59e0b",
+              accent: "#60a5fa"
+            }
+          }
+        }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+      body {
+        background: #0f1114;
+        color: #e6e8eb;
+      }
+      .chart-container {
+        position: relative;
+        height: 280px;
+        width: 100%;
+      }
+      .glass {
+        background: rgba(22, 27, 34, 0.9);
+        backdrop-filter: blur(10px);
+      }
+      .summary-card {
+        background: #202735;
+        border-radius: 0.875rem;
+        border: 1px solid rgba(94, 114, 138, 0.45);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      }
+      .summary-card.success {
+        border-color: rgba(34, 197, 94, 0.35);
+      }
+      .summary-card.failed {
+        border-color: rgba(239, 68, 68, 0.35);
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 0.875rem;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        background: rgba(20, 83, 45, 0.5);
+        color: #86efac;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+      }
+      .status-pill.failed {
+        border-color: rgba(239, 68, 68, 0.35);
+        background: rgba(127, 29, 29, 0.45);
+        color: #fda4af;
+      }
+      .screenshot-thumb {
+        width: 96px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        box-shadow: 0 10px 30px rgba(15, 23, 32, 0.45);
+        transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+      }
+      .screenshot-thumb:hover {
+        transform: scale(1.04);
+        border-color: rgba(96, 165, 250, 0.6);
+        box-shadow: 0 14px 36px rgba(15, 23, 32, 0.6);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <div class="mx-auto max-w-7xl px-6 py-10">
+      <div class="mb-6">
+        <div class="status-pill failed">
+          <span>✖</span>
+          <span>Failed</span>
+        </div>
+      </div>
+
+      <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="mb-2 text-xs uppercase tracking-[0.26em] text-slate-400">RapidFort UI Tests</p>
+          <h1 class="text-3xl font-semibold tracking-tight text-white">Test Results Dashboard</h1>
+          <p class="mt-2 text-sm text-slate-400">Generated Apr 2, 2026 11:23 AM PDT</p>
+        </div>
+        <p class="text-xs uppercase tracking-[0.26em] text-slate-500">Pass rate 96.4%</p>
+      </div>
+
+      <div class="mb-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div class="summary-card p-6 text-center">
+          <p class="text-4xl font-semibold tracking-tight text-white">28</p>
+          <p class="mt-3 text-[11px] uppercase tracking-[0.24em] text-slate-400">Tests Executed</p>
+        </div>
+        <div class="summary-card success p-6 text-center">
+          <p class="text-4xl font-semibold tracking-tight text-emerald-400">27</p>
+          <p class="mt-3 text-[11px] uppercase tracking-[0.24em] text-slate-400">Passed</p>
+        </div>
+        <div class="summary-card failed p-6 text-center">
+          <p class="text-4xl font-semibold tracking-tight text-rose-400">1</p>
+          <p class="mt-3 text-[11px] uppercase tracking-[0.24em] text-slate-400">Failed</p>
+        </div>
+        <div class="summary-card p-6 text-center">
+          <p class="text-4xl font-semibold tracking-tight text-white">83</p>
+          <p class="mt-2 text-sm font-medium text-slate-300">seconds</p>
+          <p class="mt-2 text-[11px] uppercase tracking-[0.24em] text-slate-400">Duration</p>
+        </div>
+      </div>
+
+      <div class="mb-8 grid gap-6 lg:grid-cols-2">
+        <div class="glass rounded-2xl border border-slate-800 p-6 shadow-xl">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-white">Result Distribution</h2>
+            <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">Doughnut</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="distributionChart"></canvas>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl border border-slate-800 p-6 shadow-xl">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-white">Pass Rate Snapshot</h2>
+            <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">Bar</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="passRateChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8 glass rounded-2xl border border-slate-800 p-6 shadow-xl">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-white">Last 5 Runs</h2>
+          <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">Line</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="historyChart"></canvas>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl border border-slate-800 p-6 shadow-xl">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-white">Test Case Details</h2>
+          <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">Detailed view</span>
+        </div>
+        <div class="max-h-[34rem] overflow-y-auto overflow-x-hidden rounded-lg border border-slate-800">
+          <table class="min-w-full table-fixed text-left text-xs">
+            <colgroup>
+              <col class="w-[16%]" />
+              <col class="w-[9%]" />
+              <col class="w-[8%]" />
+              <col class="w-[7%]" />
+              <col class="w-[28%]" />
+              <col class="w-[8%]" />
+              <col class="w-[24%]" />
+            </colgroup>
+            <thead class="sticky top-0 z-10 border-b border-slate-700 bg-slate-900">
+              <tr class="text-slate-400">
+                <th class="px-2 py-3 font-medium">Test Name</th>
+                <th class="px-2 py-3 font-medium">Suite</th>
+                <th class="px-2 py-3 font-medium">Status</th>
+                <th class="px-2 py-3 font-medium">Duration</th>
+                <th class="px-2 py-3 font-medium">Error Message</th>
+                <th class="px-2 py-3 font-medium">Screenshot</th>
+                <th class="px-2 py-3 font-medium">Trace</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTable" class="divide-y divide-slate-900"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const results = [{"name": "test_login_with_valid_credentials[chromium]", "classname": "tests.test_login_page", "time": 7.956, "status": "failed", "details": "tests/test_login_page.py:24: in test_login_with_valid_credentials\n    expect(page).not_to_have_url(contains(LoginPage.URL))\nE   AssertionError: Page URL expected not to be 're.compile('/login')'\nE   Actual value: https://us01.rapidfort.com/app/login \nE   Call log:\nE     - Expect \"to_have_url\" with timeout 5000ms\nE     - waiting for locator(\":root\")\nE       9 \u00d7 locator resolved to <html lang=\"en\" class=\"light\">\u2026</html>\nE         - unexpected value \"https://us01.rapidfort.com/app/login\"", "errorMessage": "AssertionError: Page URL expected not to be 're.compile('/login')'", "screenshot": "reports/screenshots/tests-test_login_page.py-test_login_with_valid_credentials-chromium-.png", "trace": "reports/traces/test_login_with_valid_credentials_chromium_main_20260402_182228_505977_a6878d2e.zip"}, {"name": "test_about_us_page_loaded[chromium]", "classname": "tests.test_about_us_page", "time": 6.693, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_automated_vulnerability_remediation_loaded[chromium]", "classname": "tests.test_automated_vulnerability_remediation", "time": 0.992, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_blog_page_loaded[chromium]", "classname": "tests.test_blog_page", "time": 4.507, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_community_page_loaded[chromium]", "classname": "tests.test_community_page", "time": 3.018, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_finance_page_loaded[chromium]", "classname": "tests.test_finance_page", "time": 1.109, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_footer_links_visible[chromium]", "classname": "tests.test_home_page", "time": 1.958, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_hero_ctas_visible[chromium]", "classname": "tests.test_home_page", "time": 2.347, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_homepage_loads[chromium]", "classname": "tests.test_home_page", "time": 3.649, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": "reports/traces/test_homepage_loads_chromium_main_20260402_182205_704416_0b2f12f8.zip"}, {"name": "test_key_content_sections_visible[chromium]", "classname": "tests.test_home_page", "time": 2.194, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_logo_redirects_to_homepage[chromium]", "classname": "tests.test_home_page", "time": 4.25, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_request_access_navigation[chromium]", "classname": "tests.test_home_page", "time": 3.069, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": "reports/traces/test_request_access_navigation_chromium_main_20260402_182223_285461_2fd9fc01.zip"}, {"name": "test_schedule_demo_navigation[chromium]", "classname": "tests.test_home_page", "time": 3.25, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_negative_scenarios_data_driven[chromium-existing_email_empty_password]", "classname": "tests.test_login_page", "time": 2.578, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_negative_scenarios_data_driven[chromium-existing_email_numeric_password]", "classname": "tests.test_login_page", "time": 2.546, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_negative_scenarios_data_driven[chromium-existing_email_special_char_password]", "classname": "tests.test_login_page", "time": 3.169, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_negative_scenarios_data_driven[chromium-invalid_password_long]", "classname": "tests.test_login_page", "time": 2.693, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_negative_scenarios_data_driven[chromium-invalid_password_short]", "classname": "tests.test_login_page", "time": 2.746, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_negative_scenarios_data_driven[chromium-nonexistent_account]", "classname": "tests.test_login_page", "time": 2.762, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_page_loads[chromium]", "classname": "tests.test_login_page", "time": 2.134, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": "reports/traces/test_login_page_loads_chromium_main_20260402_182226_548277_4f69736e.zip"}, {"name": "test_login_ui_with_user_created_by_api_helper[chromium]", "classname": "tests.test_login_page", "time": 2.636, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_with_empty_email[chromium]", "classname": "tests.test_login_page", "time": 2.184, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_with_empty_password[chromium]", "classname": "tests.test_login_page", "time": 2.543, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_with_invalid_email_format[chromium]", "classname": "tests.test_login_page", "time": 3.102, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_with_nonexistent_email_and_password[chromium]", "classname": "tests.test_login_page", "time": 2.612, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_login_with_valid_email_invalid_password[chromium]", "classname": "tests.test_login_page", "time": 2.836, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": "reports/traces/test_login_with_valid_email_invalid_password_chromium_main_20260402_182237_019161_4ce12320.zip"}, {"name": "test_partners_page_loaded[chromium]", "classname": "tests.test_partners_page", "time": 1.726, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": ""}, {"name": "test_platform_overview_loaded[chromium]", "classname": "tests.test_platform_overview", "time": 1.128, "status": "passed", "details": "", "errorMessage": "", "screenshot": "", "trace": "reports/traces/test_platform_overview_loaded_chromium_main_20260402_182257_369354_e93b26a2.zip"}];
+      const history = [{"generatedAt": "2026-04-02T11:23:12.375813-07:00", "passRate": 96.4, "passed": 27, "failed": 1, "skipped": 0, "total": 28}];
+
+      const buildArtifactHref = (artifactPath, artifactRoot) => {
+        if (!artifactPath) {
+          return "";
+        }
+        return `${artifactRoot}/${artifactPath.split("/").pop()}`;
+      };
+
+      const toAbsoluteUrl = (href) => {
+        if (!href) {
+          return "";
+        }
+        return new URL(href, window.location.href).href;
+      };
+
+      const buildTraceViewerUrl = (href) => {
+        if (!href) {
+          return "";
+        }
+        return `https://trace.playwright.dev/?trace=${encodeURIComponent(toAbsoluteUrl(href))}`;
+      };
+
+      const formatSuiteName = (classname) => {
+        if (!classname) {
+          return "n/a";
+        }
+        return classname.replace(/^tests\./, "").replace(/^test_/, "");
+      };
+
+      const statusColors = {
+        passed: "#22c55e",
+        failed: "#ef4444",
+        skipped: "#f59e0b"
+      };
+
+      const tableBody = document.getElementById("resultsTable");
+      results.forEach((test) => {
+        const badgeColor =
+          test.status === "passed"
+            ? "bg-success/15 text-success"
+            : test.status === "failed"
+              ? "bg-failed/15 text-failed"
+              : "bg-skipped/15 text-skipped";
+        const statusLabel =
+          test.status === "passed"
+            ? "Passed"
+            : test.status === "failed"
+              ? "Failed"
+              : "Skipped";
+
+        const row = document.createElement("tr");
+        row.className = "border-b border-slate-900 hover:bg-slate-900/60";
+        const suiteName = formatSuiteName(test.classname);
+        const screenshotHref = buildArtifactHref(test.screenshot, "../screenshots");
+        const screenshotCell = test.screenshot
+          ? `<a href="${screenshotHref}" target="_blank" rel="noreferrer" title="${toAbsoluteUrl(screenshotHref)}">
+               <img class="screenshot-thumb" src="${screenshotHref}" alt="Failure screenshot for ${test.name}" />
+             </a>`
+          : `<span class="text-slate-500">-</span>`;
+        const traceHref = buildArtifactHref(test.trace, "../traces");
+        const traceViewerHref = buildTraceViewerUrl(traceHref);
+        const traceCell = test.trace
+          ? `<div>
+               <a class="text-accent underline underline-offset-4" href="${traceViewerHref}" target="_blank" rel="noreferrer">Viewer</a>
+               <div class="mt-0.5">
+                 <a class="text-slate-300 underline underline-offset-4" href="${traceHref}" target="_blank" rel="noreferrer">ZIP</a>
+               </div>
+             </div>`
+          : `<span class="text-slate-500">-</span>`;
+        const errorCell = test.errorMessage
+          ? test.errorMessage.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+          : "-";
+        row.innerHTML = `
+          <td class="px-2 py-2 align-top text-white"><div class="break-words leading-snug" title="${test.name}">${test.name}</div></td>
+          <td class="px-2 py-2 align-top text-slate-400"><div class="break-words leading-snug" title="${test.classname || "n/a"}">${suiteName}</div></td>
+          <td class="px-2 py-2"><span class="rounded-full px-2 py-0.5 text-[11px] font-medium ${badgeColor}">${statusLabel}</span></td>
+          <td class="px-2 py-2 align-top text-slate-300 whitespace-nowrap">${test.time.toFixed(3)}s</td>
+          <td class="px-2 py-2 align-top text-slate-300 break-words leading-snug">${errorCell}</td>
+          <td class="px-2 py-2 align-top text-slate-300">${screenshotCell}</td>
+          <td class="px-2 py-2 align-top text-slate-300 break-words">${traceCell}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      new Chart(document.getElementById("distributionChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Passed", "Failed", "Skipped"],
+          datasets: [{
+            data: [27, 1, 0],
+            backgroundColor: ["#22c55e", "#ef4444", "#f59e0b"],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#cbd5e1" }
+            }
+          }
+        }
+      });
+
+      new Chart(document.getElementById("passRateChart"), {
+        type: "bar",
+        data: {
+          labels: ["Current Run"],
+          datasets: [{
+            label: "Pass Rate",
+            data: [96.4],
+            backgroundColor: "#60a5fa",
+            borderRadius: 10
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: { color: "#94a3b8" },
+              grid: { color: "rgba(148, 163, 184, 0.15)" }
+            },
+            x: {
+              ticks: { color: "#94a3b8" },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      new Chart(document.getElementById("historyChart"), {
+        type: "line",
+        data: {
+          labels: history.map((run, index) => `Run ${index + 1}`),
+          datasets: [{
+            label: "Pass Rate",
+            data: history.map((run) => run.passRate),
+            borderColor: "#60a5fa",
+            backgroundColor: "rgba(96, 165, 250, 0.15)",
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: "#22c55e",
+            pointBorderColor: "#22c55e"
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: { color: "#94a3b8" },
+              grid: { color: "rgba(148, 163, 184, 0.15)" }
+            },
+            x: {
+              ticks: { color: "#94a3b8" },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: "#cbd5e1" }
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
