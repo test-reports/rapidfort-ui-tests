@@ -25,11 +25,19 @@ export LT_BROWSER_VERSION="latest"
 # Run full suite (uses .env defaults)
 python -m pytest
 
+# Run full suite against specific environment mapping
+python -m pytest --env dev
+python -m pytest --env qa
+python -m pytest --env staging
+
 # Run full suite in parallel (4 workers)
 python -m pytest -n 4
 
 # Run full suite in parallel on LambdaTest
 python -m pytest -n 4 --lambdatest
+
+# Run LambdaTest against specific environment mapping
+python -m pytest -n 4 --lambdatest --env qa
 
 # Run only smoke tests
 python -m pytest -m smoke

@@ -1,5 +1,8 @@
 import json
 from datetime import datetime
+import hashlib
+import os
+from pathlib import Path
 import re
 
 import pytest
@@ -11,9 +14,12 @@ from config.paths import (
     SCREENSHOTS_DIR,
     TRACES_DIR,
 )
-from config.settings import BASE_URL, BROWSER
+from config.settings import BROWSER
 
-ARTIFACTS_JSON = JUNIT_DIR / "failure_artifacts.json"
+pytest_plugins = ("utils.lambdatest",)
+
+ARTIFACTS_PREFIX = "failure_artifacts_"
+ARTIFACTS_GLOB = f"{ARTIFACTS_PREFIX}*.json"
 DESKTOP_VIEWPORT = {"width": 1440, "height": 900}
 BROWSER_MAP = {
     "safari": "webkit",
@@ -23,13 +29,36 @@ BROWSER_MAP = {
 }
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--env",
+        action="store",
+        choices=("dev", "qa", "staging"),
+        help="Target environment base URL mapping: dev, qa, staging.",
+    )
+
+
 def pytest_configure(config):
+    target_env = config.getoption("--env")
+    if target_env:
+        os.environ["TEST_ENV"] = target_env
+
     cli_args = list(getattr(config.invocation_params, "args", ()))
     browser_arg_passed = any(
         arg == "--browser" or arg.startswith("--browser=") for arg in cli_args
     )
     if not browser_arg_passed:
         config.option.browser = [BROWSER_MAP.get(BROWSER, "chromium")]
+
+
+def pytest_sessionstart(session):
+    # Cleanup only in controller/local mode to avoid workers racing cleanup.
+    if hasattr(session.config, "workerinput"):
+        return
+    if not JUNIT_DIR.exists():
+        return
+    for artifacts_file in JUNIT_DIR.glob(ARTIFACTS_GLOB):
+        artifacts_file.unlink(missing_ok=True)
 
 
 @pytest.fixture(scope="session")
@@ -50,6 +79,11 @@ def browser_type_launch_args(browser_type_launch_args):
         **browser_type_launch_args,
         "headless": False,
     }
+
+
+@pytest.fixture(autouse=True)
+def _set_playwright_timeout(page):
+    page.set_default_timeout(5_000)
 
 
 @pytest.fixture(autouse=True)
@@ -75,14 +109,29 @@ def trace_context(context, request):
 
 
 def _load_artifacts():
-    if not ARTIFACTS_JSON.exists():
+    artifacts_file = _artifact_file_path()
+    if not artifacts_file.exists():
         return {}
-    return json.loads(ARTIFACTS_JSON.read_text())
+    try:
+        return json.loads(artifacts_file.read_text())
+    except json.JSONDecodeError:
+        return {}
 
 
 def _save_artifacts(data):
     JUNIT_DIR.mkdir(parents=True, exist_ok=True)
-    ARTIFACTS_JSON.write_text(json.dumps(data, indent=2))
+    artifacts_file = _artifact_file_path()
+    tmp_file = artifacts_file.with_suffix(f"{artifacts_file.suffix}.tmp")
+    tmp_file.write_text(json.dumps(data, indent=2))
+    tmp_file.replace(artifacts_file)
+
+
+def _worker_id() -> str:
+    return os.getenv("PYTEST_XDIST_WORKER", "main")
+
+
+def _artifact_file_path() -> "Path":
+    return JUNIT_DIR / f"{ARTIFACTS_PREFIX}{_worker_id()}.json"
 
 
 def _safe_name(nodeid: str) -> str:
@@ -96,10 +145,12 @@ def _build_trace_name(nodeid: str) -> str:
     browser = ""
     if "[" in test_name and test_name.endswith("]"):
         browser = re.sub(r"[^A-Za-z0-9_]+", "_", test_name.rsplit("[", 1)[-1].rstrip("]"))
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    worker = _worker_id()
+    node_hash = hashlib.sha1(nodeid.encode("utf-8")).hexdigest()[:8]
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     if browser:
-        return f"{base_name}_{browser}_{timestamp}.zip"
-    return f"{base_name}_{timestamp}.zip"
+        return f"{base_name}_{browser}_{worker}_{timestamp}_{node_hash}.zip"
+    return f"{base_name}_{worker}_{timestamp}_{node_hash}.zip"
 
 
 def _is_smoke_test(item) -> bool:

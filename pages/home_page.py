@@ -9,37 +9,31 @@ class HomePage(BasePage):
     PATH = ""
     URL = "rapidfort.com"
     TITLE = "RapidFort"
-    HERO_HEADING = re.compile(r"software supply chain", re.I)
+    HERO_HEADING = re.compile(r"Remediate.*CVEs", re.I)
 
     @property
     def hero_heading(self):
         return self.page.get_by_role("heading", level=1, name=self.HERO_HEADING)
 
     @property
-    def hero_section(self):
-        return self.page.locator("[data-testid='hero'], .hero-section, section.hero").or_(
-            self.hero_heading.locator("xpath=ancestor::section")
-        )
-
-    @property
     def request_access(self):
-        return self.hero_section.get_by_role("link", name="Request Access")
+        return self.page.get_by_role("link", name="Request Access").first
 
     @property
     def curated_images(self):
-        return self.hero_section.get_by_role("link", name="Curated Images")
+        return self.page.get_by_role("link", name="Curated Images").first
 
     @property
     def schedule_demo(self):
-        return self.nav_menu.get_by_role("link", name="Schedule a Demo")
+        return self.page.get_by_role("link", name="Schedule a Demo").first
 
     @property
     def logo(self):
-        return self.nav_area.locator("a.vf-nav-logo")
+        return self.page.locator("a.vf-nav-logo")
 
     @property
     def sign_in_link(self):
-        return self.nav_area.get_by_role("link", name="Sign In")
+        return self.page.get_by_role("link", name=re.compile(r"^Sign In$", re.I)).first
 
     @property
     def faq_section(self):
@@ -51,15 +45,19 @@ class HomePage(BasePage):
 
     @property
     def footer(self):
-        return self.page.locator("footer").first
+        return self.page.get_by_text(re.compile(r"©.*RapidFort", re.I)).first
 
     @property
     def footer_privacy_policy(self):
-        return self.footer.get_by_role("link", name="Privacy Policy")
+        return self.page.get_by_role("link", name="Privacy Policy")
+
+    @property
+    def hero_section(self):
+        return self.hero_heading.locator("xpath=ancestor::section[1]")
 
     @property
     def footer_terms_of_use(self):
-        return self.footer.get_by_role("link", name="Terms of Use")
+        return self.page.get_by_role("link", name="Terms of Use")
 
     def click_schedule_demo(self) -> None:
         self.schedule_demo.click()
@@ -74,6 +72,7 @@ class HomePage(BasePage):
         self.curated_images.click()
 
     def click_sign_in(self) -> None:
+        self.open_nav()
         self.sign_in_link.click()
 
     def click_community(self) -> None:
@@ -92,16 +91,13 @@ class HomePage(BasePage):
         self.click_nav_link("Platform Overview")
 
     def click_company(self) -> None:
-        self.hover_nav_link("Company")
-        self.click_about_us()
+        self.click_dropdown_link("Company", "About Us")
 
     def click_blog(self) -> None:
-        self.hover_nav_link("Resources")
-        self.click_rapidfort_blog()
+        self.click_dropdown_link("Resources", "RapidFort Blog")
 
     def click_platform(self) -> None:
-        self.hover_nav_link("Platform")
-        self.click_platform_overview()
+        self.click_dropdown_link("Platform", "Platform Overview")
 
     def expect_loaded(self) -> None:
         self.expect_page_title_contains_rapidfort()

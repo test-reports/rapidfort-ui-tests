@@ -1,0 +1,32 @@
+[
+  {
+    "id": "invalid_password_short",
+    "email": "valid@email.com",
+    "password": "wrong"
+  },
+  {
+    "id": "invalid_password_long",
+    "email": "valid@email.com",
+    "password": "wrongpassword"
+  },
+  {
+    "id": "nonexistent_account",
+    "email": "nonexistent@fakeemail.com",
+    "password": "anypassword"
+  },
+  {
+    "id": "existing_email_empty_password",
+    "email": "valid@email.com",
+    "password": ""
+  },
+  {
+    "id": "existing_email_numeric_password",
+    "email": "valid@email.com",
+    "password": "123456789"
+  },
+  {
+    "id": "existing_email_special_char_password",
+    "email": "valid@email.com",
+    "password": "!@#$%^&*()"
+  }
+]

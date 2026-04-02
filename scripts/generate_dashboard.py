@@ -10,14 +10,35 @@ RESULTS_XML = JUNIT_DIR / "results.xml"
 SUMMARY_JSON = HTML_DIR / "summary.json"
 HISTORY_JSON = HTML_DIR / "history.json"
 ARTIFACTS_JSON = JUNIT_DIR / "failure_artifacts.json"
+ARTIFACTS_GLOB = "failure_artifacts_*.json"
 DASHBOARD_HTML = HTML_DIR / "index.html"
 LOS_ANGELES_TZ = ZoneInfo("America/Los_Angeles")
 
 
 def load_artifacts():
-    if not ARTIFACTS_JSON.exists():
-        return {}
-    return json.loads(ARTIFACTS_JSON.read_text())
+    artifacts = {}
+    worker_artifact_files = sorted(JUNIT_DIR.glob(ARTIFACTS_GLOB))
+    for artifacts_file in worker_artifact_files:
+        try:
+            data = json.loads(artifacts_file.read_text())
+        except json.JSONDecodeError:
+            print(f"Warning: skipping malformed artifact file {artifacts_file}")
+            continue
+        if isinstance(data, dict):
+            artifacts.update(data)
+
+    if artifacts:
+        return artifacts
+
+    # Backward compatibility for historical single-file artifact format.
+    if ARTIFACTS_JSON.exists():
+        try:
+            data = json.loads(ARTIFACTS_JSON.read_text())
+            if isinstance(data, dict):
+                return data
+        except json.JSONDecodeError:
+            print(f"Warning: skipping malformed artifact file {ARTIFACTS_JSON}")
+    return {}
 
 
 def junit_nodeid(classname, name):
@@ -93,6 +114,7 @@ def parse_results():
         raise ValueError("Could not locate testsuite in JUnit XML.")
 
     artifacts = load_artifacts()
+    suite_duration = round(float(testsuite.attrib.get("time", 0)), 3)
     results = []
     for testcase in testsuite.findall("testcase"):
         failure = testcase.find("failure")
@@ -134,9 +156,16 @@ def parse_results():
         )
 
     status_order = {"failed": 0, "skipped": 1, "passed": 2}
-    return sorted(
-        results,
-        key=lambda test: (status_order.get(test["status"], 99), test["classname"], test["name"]),
+    return (
+        sorted(
+            results,
+            key=lambda test: (
+                status_order.get(test["status"], 99),
+                test["classname"],
+                test["name"],
+            ),
+        ),
+        suite_duration,
     )
 
 
@@ -166,7 +195,7 @@ def build_report_filename(summary):
     return f"rapidfort_{test_type}_{browser}_{timestamp}.html"
 
 
-def build_summary(results):
+def build_summary(results, suite_duration=None):
     status_order = {"failed": 0, "skipped": 1, "passed": 2}
     sorted_results = sorted(
         results,
@@ -181,7 +210,11 @@ def build_summary(results):
     skipped = sum(1 for test in results if test["status"] == "skipped")
     total = len(results)
     pass_rate = round((passed / total) * 100, 1) if total else 0
-    duration = round(sum(test["time"] for test in results), 3)
+    duration = (
+        round(float(suite_duration), 3)
+        if suite_duration is not None
+        else round(sum(test["time"] for test in results), 3)
+    )
     generated_at = datetime.now(LOS_ANGELES_TZ).isoformat()
     generated_at_display = datetime.now(LOS_ANGELES_TZ).strftime("%b %-d, %Y %-I:%M %p %Z")
 
@@ -602,8 +635,8 @@ def main():
     SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
     TRACES_DIR.mkdir(parents=True, exist_ok=True)
 
-    results = parse_results()
-    summary = build_summary(results)
+    results, suite_duration = parse_results()
+    summary = build_summary(results, suite_duration=suite_duration)
     history = update_history(summary)
     report_filename = build_report_filename(summary)
     report_file = HTML_DIR / report_filename

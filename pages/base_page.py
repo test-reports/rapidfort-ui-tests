@@ -31,16 +31,23 @@ class BasePage:
         self.page.reload()
 
     @property
-    def nav_menu(self):
-        return self.page.locator(".vf-nav-menu-new")
+    def hamburger_button(self):
+        return self.page.locator("button.vf-menu-button")
 
-    @property
-    def nav_area(self):
-        """
-        Playwright locators are lazy -- resolved fresh on each access.
-        Using @property avoids stale references with dynamic DOM updates.
-        """
-        return self.page.locator(".vf-nav-area")
+    def open_nav(self) -> None:
+        """Open the hamburger navigation menu if not already expanded."""
+        nav_indicator = self.page.get_by_role(
+            "button", name=re.compile(r"^Platform$", re.I)
+        )
+        if not nav_indicator.is_visible():
+            self.hamburger_button.click()
+            nav_indicator.wait_for(state="visible")
+
+    def expand_nav_dropdown(self, name: str) -> None:
+        """Expand a dropdown section in the hamburger nav."""
+        self.page.get_by_role(
+            "button", name=re.compile(f"^{name}$", re.I)
+        ).click()
 
     def get_title(self) -> str:
         return self.page.title()
@@ -61,22 +68,36 @@ class BasePage:
         locator.press(key)
 
     def nav_link(self, name: str):
-        return self.nav_menu.get_by_role("link", name=re.compile(name, re.I))
+        return self.page.get_by_role("link", name=re.compile(name, re.I)).first
 
     def header_link(self, name: str):
-        return self.nav_area.get_by_role("link", name=re.compile(name, re.I))
+        return self.page.get_by_role("link", name=re.compile(name, re.I)).first
 
     def click_nav_link(self, name: str) -> None:
+        self.open_nav()
         self.nav_link(name).click()
 
     def hover_nav_link(self, name: str) -> None:
-        self.nav_link(name).hover()
+        """Open nav and expand the named dropdown (replaces hover on old desktop nav)."""
+        self.open_nav()
+        self.expand_nav_dropdown(name)
 
     def click_hover_nav_link(self, menu_name: str, item_name: str) -> None:
-        self.hover_nav_link(menu_name)
-        self.click_nav_link(item_name)
+        self.click_dropdown_link(menu_name, item_name)
+
+    def click_dropdown_link(self, dropdown_name: str, link_name: str) -> None:
+        """Open nav, expand a dropdown, and click a link scoped to that dropdown."""
+        self.open_nav()
+        self.expand_nav_dropdown(dropdown_name)
+        dropdown = self.page.get_by_role(
+            "navigation", name=re.compile(f"^{dropdown_name}$", re.I)
+        )
+        dropdown.get_by_role(
+            "link", name=re.compile(link_name, re.I)
+        ).first.click()
 
     def click_header_link(self, name: str) -> None:
+        self.open_nav()
         self.header_link(name).click()
 
     def wait_for_timeout(self, ms: int = 1000) -> None:
