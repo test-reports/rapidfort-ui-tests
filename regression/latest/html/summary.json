@@ -1,57 +1,137 @@
 {
-  "generatedAt": "2026-04-01T16:09:58.890366-07:00",
-  "generatedAtDisplay": "Apr 1, 2026 4:09 PM PDT",
-  "total": 13,
-  "passed": 9,
-  "failed": 4,
+  "generatedAt": "2026-04-02T08:57:08.478378-07:00",
+  "generatedAtDisplay": "Apr 2, 2026 8:57 AM PDT",
+  "total": 28,
+  "passed": 18,
+  "failed": 10,
   "skipped": 0,
-  "passRate": 69.2,
-  "duration": 151.811,
+  "passRate": 64.3,
+  "duration": 275.904,
   "results": [
+    {
+      "name": "test_curated_images_navigation[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 32.907,
+      "status": "failed",
+      "details": "tests/test_home_page.py:67: in test_curated_images_navigation\n    home_page.click_curated_images()\npages/home_page.py:74: in click_curated_images\n    self.curated_images.click()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15505: in click\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:160: in click\n    return await self._frame.click(self._selector, strict=True, **params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:521: in click\n    await self._channel.send(\"click\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\"[data-testid='hero'], .hero-section, section.hero\").or_(get_by_role(\"heading\", name=re.compile(r\"software supply chain\", re.IGNORECASE), level=1).locator(\"xpath=ancestor::section\")).get_by_role(\"link\", name=\"Curated Images\")",
+      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_curated_images_navigation-chromium-.png",
+      "trace": "reports/traces/test_curated_images_navigation_chromium_20260402_155408.zip"
+    },
+    {
+      "name": "test_footer_links_visible[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 7.8,
+      "status": "failed",
+      "details": "tests/test_home_page.py:39: in test_footer_links_visible\n    expect(home_page.footer_privacy_policy).to_be_visible()\nE   AssertionError: Locator expected to be visible\nE   Actual value: <element(s) not found> \nE   Call log:\nE     - Expect \"to_be_visible\" with timeout 5000ms\nE     - waiting for locator(\"footer\").first.get_by_role(\"link\", name=\"Privacy Policy\")",
+      "errorMessage": "AssertionError: Locator expected to be visible",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_footer_links_visible-chromium-.png",
+      "trace": "reports/traces/test_footer_links_visible_chromium_20260402_155312.zip"
+    },
+    {
+      "name": "test_hero_ctas_visible[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 8.291,
+      "status": "failed",
+      "details": "tests/test_home_page.py:25: in test_hero_ctas_visible\n    expect(home_page.request_access).to_be_visible()\nE   AssertionError: Locator expected to be visible\nE   Actual value: <element(s) not found> \nE   Call log:\nE     - Expect \"to_be_visible\" with timeout 5000ms\nE     - waiting for locator(\"[data-testid='hero'], .hero-section, section.hero\").or_(get_by_role(\"heading\", name=re.compile(r\"software supply chain\", re.IGNORECASE), level=1).locator(\"xpath=ancestor::section\")).get_by_role(\"link\", name=\"Request Access\")",
+      "errorMessage": "AssertionError: Locator expected to be visible",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_hero_ctas_visible-chromium-.png",
+      "trace": "reports/traces/test_hero_ctas_visible_chromium_20260402_155254.zip"
+    },
+    {
+      "name": "test_homepage_loads[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 8.968,
+      "status": "failed",
+      "details": "tests/test_home_page.py:20: in test_homepage_loads\n    expect(home_page.hero_heading).to_be_visible()\nE   AssertionError: Locator expected to be visible\nE   Actual value: <element(s) not found> \nE   Call log:\nE     - Expect \"to_be_visible\" with timeout 5000ms\nE     - waiting for get_by_role(\"heading\", name=re.compile(r\"software supply chain\", re.IGNORECASE), level=1)",
+      "errorMessage": "AssertionError: Locator expected to be visible",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_homepage_loads-chromium-.png",
+      "trace": "reports/traces/test_homepage_loads_chromium_20260402_155245.zip"
+    },
+    {
+      "name": "test_key_content_sections_visible[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 8.387,
+      "status": "failed",
+      "details": "tests/test_home_page.py:34: in test_key_content_sections_visible\n    expect(home_page.footer).to_be_visible()\nE   AssertionError: Locator expected to be visible\nE   Actual value: <element(s) not found> \nE   Call log:\nE     - Expect \"to_be_visible\" with timeout 5000ms\nE     - waiting for locator(\"footer\").first",
+      "errorMessage": "AssertionError: Locator expected to be visible",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_key_content_sections_visible-chromium-.png",
+      "trace": "reports/traces/test_key_content_sections_visible_chromium_20260402_155303.zip"
+    },
+    {
+      "name": "test_nav_company_about_us[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 33.406,
+      "status": "failed",
+      "details": "tests/test_home_page.py:85: in test_nav_company_about_us\n    home_page.click_company()\npages/home_page.py:95: in click_company\n    self.hover_nav_link(\"Company\")\npages/base_page.py:73: in hover_nav_link\n    self.nav_link(name).hover()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:16898: in hover\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:441: in hover\n    return await self._frame.hover(\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:684: in hover\n    await self._channel.send(\"hover\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.hover: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-menu-new\").get_by_role(\"link\", name=re.compile(r\"Company\", re.IGNORECASE))",
+      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.hover: Timeout 30000ms exceeded.",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_nav_company_about_us-chromium-.png",
+      "trace": "reports/traces/test_nav_company_about_us_chromium_20260402_155521.zip"
+    },
+    {
+      "name": "test_nav_platform_overview[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 32.802,
+      "status": "failed",
+      "details": "tests/test_home_page.py:79: in test_nav_platform_overview\n    home_page.click_platform()\npages/home_page.py:103: in click_platform\n    self.hover_nav_link(\"Platform\")\npages/base_page.py:73: in hover_nav_link\n    self.nav_link(name).hover()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:16898: in hover\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:441: in hover\n    return await self._frame.hover(\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:684: in hover\n    await self._channel.send(\"hover\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.hover: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-menu-new\").get_by_role(\"link\", name=re.compile(r\"Platform\", re.IGNORECASE))",
+      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.hover: Timeout 30000ms exceeded.",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_nav_platform_overview-chromium-.png",
+      "trace": "reports/traces/test_nav_platform_overview_chromium_20260402_155447.zip"
+    },
+    {
+      "name": "test_nav_resources_blog[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 33.168,
+      "status": "failed",
+      "details": "tests/test_home_page.py:91: in test_nav_resources_blog\n    home_page.click_blog()\npages/home_page.py:99: in click_blog\n    self.hover_nav_link(\"Resources\")\npages/base_page.py:73: in hover_nav_link\n    self.nav_link(name).hover()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:16898: in hover\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:441: in hover\n    return await self._frame.hover(\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:684: in hover\n    await self._channel.send(\"hover\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.hover: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-menu-new\").get_by_role(\"link\", name=re.compile(r\"Resources\", re.IGNORECASE))",
+      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.hover: Timeout 30000ms exceeded.",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_nav_resources_blog-chromium-.png",
+      "trace": "reports/traces/test_nav_resources_blog_chromium_20260402_155555.zip"
+    },
+    {
+      "name": "test_request_access_navigation[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 32.988,
+      "status": "failed",
+      "details": "tests/test_home_page.py:61: in test_request_access_navigation\n    home_page.click_request_access()\npages/home_page.py:68: in click_request_access\n    self.request_access.click()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15505: in click\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:160: in click\n    return await self._frame.click(self._selector, strict=True, **params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:521: in click\n    await self._channel.send(\"click\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\"[data-testid='hero'], .hero-section, section.hero\").or_(get_by_role(\"heading\", name=re.compile(r\"software supply chain\", re.IGNORECASE), level=1).locator(\"xpath=ancestor::section\")).get_by_role(\"link\", name=\"Request Access\")",
+      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.",
+      "screenshot": "reports/screenshots/tests-test_home_page.py-test_request_access_navigation-chromium-.png",
+      "trace": "reports/traces/test_request_access_navigation_chromium_20260402_155334.zip"
+    },
+    {
+      "name": "test_login_with_valid_credentials[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 8.48,
+      "status": "failed",
+      "details": "tests/test_login_page.py:21: in test_login_with_valid_credentials\n    expect(page).not_to_have_url(contains(LoginPage.URL))\nE   AssertionError: Page URL expected not to be 're.compile('/login')'\nE   Actual value: https://us01.rapidfort.com/app/login \nE   Call log:\nE     - Expect \"to_have_url\" with timeout 5000ms\nE     - waiting for locator(\":root\")\nE       9 \u00d7 locator resolved to <html lang=\"en\" class=\"light\">\u2026</html>\nE         - unexpected value \"https://us01.rapidfort.com/app/login\"",
+      "errorMessage": "AssertionError: Page URL expected not to be 're.compile('/login')'",
+      "screenshot": "reports/screenshots/tests-test_login_page.py-test_login_with_valid_credentials-chromium-.png",
+      "trace": "reports/traces/test_login_with_valid_credentials_chromium_20260402_155640.zip"
+    },
     {
       "name": "test_about_us_page_loaded[chromium]",
       "classname": "tests.test_about_us_page",
-      "time": 36.694,
-      "status": "failed",
-      "details": "tests/test_about_us_page.py:2: in test_about_us_page_loaded\n    about_us_page = home_page.go_to_company()\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\npages/home_page.py:91: in go_to_company\n    self.click_nav_link(\"Company\")\npages/base_page.py:62: in click_nav_link\n    self.nav_link(name).click()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15505: in click\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:160: in click\n    return await self._frame.click(self._selector, strict=True, **params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:521: in click\n    await self._channel.send(\"click\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-menu-new\").get_by_role(\"link\", name=re.compile(r\"Company\", re.IGNORECASE))",
-      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.",
-      "screenshot": "reports/screenshots/tests-test_about_us_page.py-test_about_us_page_loaded-chromium-.png",
-      "trace": "reports/traces/test_about_us_page_loaded_chromium_20260401_230726.zip"
-    },
-    {
-      "name": "test_blog_page_loaded[chromium]",
-      "classname": "tests.test_blog_page",
-      "time": 31.748,
-      "status": "failed",
-      "details": "tests/test_blog_page.py:2: in test_blog_page_loaded\n    blog_page = home_page.go_to_blog()\n                ^^^^^^^^^^^^^^^^^^^^^^\npages/home_page.py:97: in go_to_blog\n    self.click_nav_link(\"Resources\")\npages/base_page.py:62: in click_nav_link\n    self.nav_link(name).click()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15505: in click\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:160: in click\n    return await self._frame.click(self._selector, strict=True, **params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:521: in click\n    await self._channel.send(\"click\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-menu-new\").get_by_role(\"link\", name=re.compile(r\"Resources\", re.IGNORECASE))",
-      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.",
-      "screenshot": "reports/screenshots/tests-test_blog_page.py-test_blog_page_loaded-chromium-.png",
-      "trace": "reports/traces/test_blog_page_loaded_chromium_20260401_230802.zip"
-    },
-    {
-      "name": "test_login_page_loaded[chromium]",
-      "classname": "tests.test_login_page",
-      "time": 31.637,
-      "status": "failed",
-      "details": "tests/test_login_page.py:6: in test_login_page_loaded\n    login_page = home_page.go_to_login()\n                 ^^^^^^^^^^^^^^^^^^^^^^^\npages/home_page.py:73: in go_to_login\n    self.click_header_link(\"Login\")\npages/base_page.py:65: in click_header_link\n    self.header_link(name).click()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15505: in click\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:160: in click\n    return await self._frame.click(self._selector, strict=True, **params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:521: in click\n    await self._channel.send(\"click\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-area\").get_by_role(\"link\", name=re.compile(r\"Login\", re.IGNORECASE))",
-      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.",
-      "screenshot": "reports/screenshots/tests-test_login_page.py-test_login_page_loaded-chromium-.png",
-      "trace": "reports/traces/test_login_page_loaded_chromium_20260401_230851.zip"
-    },
-    {
-      "name": "test_platform_overview_loaded[chromium]",
-      "classname": "tests.test_platform_overview",
-      "time": 32.649,
-      "status": "failed",
-      "details": "tests/test_platform_overview.py:6: in test_platform_overview_loaded\n    platform_overview = home_page.go_to_platform()\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^\npages/home_page.py:103: in go_to_platform\n    self.click_nav_link(\"Platform\")\npages/base_page.py:62: in click_nav_link\n    self.nav_link(name).click()\n.venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15505: in click\n    self._sync(\n.venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:160: in click\n    return await self._frame.click(self._selector, strict=True, **params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:521: in click\n    await self._channel.send(\"click\", self._timeout, locals_to_params(locals()))\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send\n    return await self._connection.wrap_api_call(\n.venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:558: in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nE   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.\nE   Call log:\nE     - waiting for locator(\".vf-nav-menu-new\").get_by_role(\"link\", name=re.compile(r\"Platform\", re.IGNORECASE))",
-      "errorMessage": "playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.",
-      "screenshot": "reports/screenshots/tests-test_platform_overview.py-test_platform_overview_loaded-chromium-.png",
-      "trace": "reports/traces/test_platform_overview_loaded_chromium_20260401_230925.zip"
+      "time": 8.959,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
     },
     {
       "name": "test_automated_vulnerability_remediation_loaded[chromium]",
       "classname": "tests.test_automated_vulnerability_remediation",
-      "time": 1.093,
+      "time": 3.1,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_blog_page_loaded[chromium]",
+      "classname": "tests.test_blog_page",
+      "time": 3.266,
       "status": "passed",
       "details": "",
       "errorMessage": "",
@@ -61,7 +141,7 @@
     {
       "name": "test_community_page_loaded[chromium]",
       "classname": "tests.test_community_page",
-      "time": 2.941,
+      "time": 3.184,
       "status": "passed",
       "details": "",
       "errorMessage": "",
@@ -71,72 +151,142 @@
     {
       "name": "test_finance_page_loaded[chromium]",
       "classname": "tests.test_finance_page",
-      "time": 0.956,
+      "time": 1.61,
       "status": "passed",
       "details": "",
       "errorMessage": "",
       "screenshot": "",
       "trace": ""
-    },
-    {
-      "name": "test_homepage_ctas[chromium]",
-      "classname": "tests.test_home_page",
-      "time": 1.898,
-      "status": "passed",
-      "details": "",
-      "errorMessage": "",
-      "screenshot": "",
-      "trace": ""
-    },
-    {
-      "name": "test_homepage_smoke[chromium]",
-      "classname": "tests.test_home_page",
-      "time": 1.614,
-      "status": "passed",
-      "details": "",
-      "errorMessage": "",
-      "screenshot": "",
-      "trace": "reports/traces/test_homepage_smoke_chromium_20260401_230838.zip"
     },
     {
       "name": "test_logo_redirects_to_homepage[chromium]",
       "classname": "tests.test_home_page",
-      "time": 3.489,
+      "time": 7.086,
       "status": "passed",
       "details": "",
       "errorMessage": "",
       "screenshot": "",
-      "trace": "reports/traces/test_logo_redirects_to_homepage_chromium_20260401_230842.zip"
+      "trace": "reports/traces/test_logo_redirects_to_homepage_chromium_20260402_155321.zip"
     },
     {
-      "name": "test_request_access_navigation[chromium]",
+      "name": "test_nav_community[chromium]",
       "classname": "tests.test_home_page",
-      "time": 2.505,
-      "status": "passed",
-      "details": "",
-      "errorMessage": "",
-      "screenshot": "",
-      "trace": "reports/traces/test_request_access_navigation_chromium_20260401_230848.zip"
-    },
-    {
-      "name": "test_schedule_demo_navigation[chromium]",
-      "classname": "tests.test_home_page",
-      "time": 2.73,
-      "status": "passed",
-      "details": "",
-      "errorMessage": "",
-      "screenshot": "",
-      "trace": "reports/traces/test_schedule_demo_navigation_chromium_20260401_230845.zip"
-    },
-    {
-      "name": "test_partners_page_loaded[chromium]",
-      "classname": "tests.test_partners_page",
-      "time": 1.857,
+      "time": 4.582,
       "status": "passed",
       "details": "",
       "errorMessage": "",
       "screenshot": "",
       "trace": ""
+    },
+    {
+      "name": "test_nav_partners[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 3.709,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_schedule_demo_navigation[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 6.566,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": "reports/traces/test_schedule_demo_navigation_chromium_20260402_155328.zip"
+    },
+    {
+      "name": "test_sign_in_navigation[chromium]",
+      "classname": "tests.test_home_page",
+      "time": 5.477,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_login_page_loads[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 2.467,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": "reports/traces/test_login_page_loads_chromium_20260402_155637.zip"
+    },
+    {
+      "name": "test_login_with_empty_email[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 2.341,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_login_with_empty_password[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 2.87,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_login_with_invalid_email_format[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 2.816,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_login_with_nonexistent_email_and_password[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 2.809,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_login_with_valid_email_invalid_password[chromium]",
+      "classname": "tests.test_login_page",
+      "time": 2.947,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_partners_page_loaded[chromium]",
+      "classname": "tests.test_partners_page",
+      "time": 2.265,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": ""
+    },
+    {
+      "name": "test_platform_overview_loaded[chromium]",
+      "classname": "tests.test_platform_overview",
+      "time": 2.653,
+      "status": "passed",
+      "details": "",
+      "errorMessage": "",
+      "screenshot": "",
+      "trace": "reports/traces/test_platform_overview_loaded_chromium_20260402_155705.zip"
     }
   ]
 }
